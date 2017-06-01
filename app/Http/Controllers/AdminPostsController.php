@@ -89,6 +89,11 @@ class AdminPostsController extends Controller
     public function edit($id)
     {
         //
+        $post = Post::findOrFail($id);
+
+        $categories = Category::lists('name','id')->all();
+
+        return view('admin.posts.edit',compact('post','categories'));
     }
 
     /**
@@ -101,6 +106,26 @@ class AdminPostsController extends Controller
     public function update(Request $request, $id)
     {
         //
+        $input = $request->all();
+
+        if($file = $request->file('photo_id')){
+
+            $name = time().$file->getClientOriginalName();
+
+            $file->move('images',$name);
+
+            $photo = Photo::create(['file'=>$name]);
+
+            $input['photo_id'] = $photo->id;
+
+        }
+
+        Auth::User()->posts()->whereId($id)->first()->update($input);
+
+//        return $input;
+        return redirect('/admin/posts');
+
+
     }
 
     /**
@@ -112,5 +137,14 @@ class AdminPostsController extends Controller
     public function destroy($id)
     {
         //
+
+        $post = Post::findOrFail($id); //先找在database的哪裡
+
+        unlink(public_path().$post->photo->file); //刪除images裡的圖片
+
+        $post->delete(); //刪除database的整筆資料
+
+        return redirect('/admin/posts');
+
     }
 }

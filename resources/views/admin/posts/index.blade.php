@@ -26,11 +26,11 @@
             @foreach($posts as $post)
               <tr>
                     <td>{{$post->id}}</td>
-                    <td>{{$post->user->name}}</td>
+                    <td><a href="{{route('admin.posts.edit',$post->id)}}">{{$post->user->name}}</a></td>
                     <td>{{$post->category?$post->category->name:"Uncatagotized!!"}}</td>
                     <td><img height="70" src="{{$post->photo?$post->photo->file:'http://placehold.it/400x400'}}" alt=""></td>
                     <td>{{$post->title}}</td>
-                    <td>{{$post->body}}</td>
+                    <td>{{str_limit($post->body,15)}}</td>
                     <td>{{$post->created_at->diffForHumans()}}</td>
                     <td>{{$post->updated_at->diffForHumans()}}</td>
               </tr>
